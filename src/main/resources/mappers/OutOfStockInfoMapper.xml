@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.dangerous_goods.dao.OutOfStockInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.example.dangerous_goods.entity.OutOfStockInfo" >
+    <id column="out_info_id" property="outInfoId" jdbcType="VARCHAR" />
+    <result column="out_id" property="outId" jdbcType="VARCHAR" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+    <result column="goods_weight" property="goodsWeight" jdbcType="DOUBLE" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from out_of_stock_info
+    where out_info_id = #{outInfoId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.example.dangerous_goods.entity.OutOfStockInfo" >
+    insert into out_of_stock_info (out_info_id, out_id, goods_name, 
+      goods_num, goods_weight)
+    values (#{outInfoId,jdbcType=VARCHAR}, #{outId,jdbcType=VARCHAR}, #{goodsName,jdbcType=VARCHAR}, 
+      #{goodsNum,jdbcType=INTEGER}, #{goodsWeight,jdbcType=DOUBLE})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.OutOfStockInfo" >
+    update out_of_stock_info
+    set out_id = #{outId,jdbcType=VARCHAR},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      goods_num = #{goodsNum,jdbcType=INTEGER},
+      goods_weight = #{goodsWeight,jdbcType=DOUBLE}
+    where out_info_id = #{outInfoId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select out_info_id, out_id, goods_name, goods_num, goods_weight
+    from out_of_stock_info
+    where out_info_id = #{outInfoId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select out_info_id, out_id, goods_name, goods_num, goods_weight
+    from out_of_stock_info
+  </select>
+  <select id="selectByOutId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select out_info_id, out_id, goods_name, goods_num, goods_weight
+    from out_of_stock_info
+    where out_id = #{outId,jdbcType=VARCHAR}
+  </select>
+</mapper>

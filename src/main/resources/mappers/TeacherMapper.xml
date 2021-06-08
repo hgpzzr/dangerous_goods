@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.dangerous_goods.dao.TeacherMapper" >
+  <resultMap id="BaseResultMap" type="com.example.dangerous_goods.entity.Teacher" >
+    <id column="job_id" property="jobId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="college" property="college" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from teacher
+    where job_id = #{jobId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.example.dangerous_goods.entity.Teacher" >
+    insert into teacher (job_id, `name`, college
+      )
+    values (#{jobId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{college,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.Teacher" >
+    update teacher
+    set `name` = #{name,jdbcType=VARCHAR},
+      college = #{college,jdbcType=VARCHAR}
+    where job_id = #{jobId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select job_id, `name`, college
+    from teacher
+    where job_id = #{jobId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select job_id, `name`, college
+    from teacher
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select job_id, `name`, college
+    from teacher
+  </select>
+</mapper>

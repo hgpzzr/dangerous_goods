@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.dangerous_goods.dao.WxUserMapper" >
+  <resultMap id="BaseResultMap" type="com.example.dangerous_goods.entity.WxUser" >
+    <id column="open_id" property="openId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="stu_num" property="stuNum" jdbcType="VARCHAR" />
+    <result column="teacher_name" property="teacherName" jdbcType="VARCHAR" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from wx_user
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.example.dangerous_goods.entity.WxUser" >
+    insert into wx_user (open_id, `name`, `type`, 
+      `status`, stu_num,teacher_name)
+    values (#{openId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{stuNum,jdbcType=VARCHAR}, #{teacherName,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.WxUser" >
+    update wx_user
+    set `name` = #{name,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=INTEGER},
+      `status` = #{status,jdbcType=INTEGER},
+      stu_num = #{stuNum,jdbcType=VARCHAR},
+      teacher_name = #{teacherName,jdbcType=VARCHAR}
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select open_id, `name`, `type`, `status`, stu_num, teacher_name
+    from wx_user
+    where open_id = #{openId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByStuNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select open_id, `name`, `type`, `status`, stu_num, teacher_name
+    from wx_user
+    where stu_num = #{stuNum,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select open_id, `name`, `type`, `status`, stu_num, teacher_name
+    from wx_user
+  </select>
+</mapper>

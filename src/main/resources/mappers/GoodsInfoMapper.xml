@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.dangerous_goods.dao.GoodsInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.example.dangerous_goods.entity.GoodsInfo" >
+    <id column="goods_info_id" property="goodsInfoId" jdbcType="VARCHAR" />
+    <result column="goods_id" property="goodsId" jdbcType="VARCHAR" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_weight" property="goodsWeight" jdbcType="DOUBLE" />
+    <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from goods_info
+    where goods_info_id = #{goodsInfoId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByGoodsId" parameterType="java.lang.String" >
+    delete from goods_info
+    where goods_id = #{goodsId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.example.dangerous_goods.entity.GoodsInfo" >
+    insert into goods_info (goods_info_id, goods_id, goods_name, 
+      goods_weight, goods_num)
+    values (#{goodsInfoId,jdbcType=VARCHAR}, #{goodsId,jdbcType=VARCHAR}, #{goodsName,jdbcType=VARCHAR}, 
+      #{goodsWeight,jdbcType=DOUBLE}, #{goodsNum,jdbcType=INTEGER})
+  </insert>
+  <insert id="batchInsert" parameterType="java.util.List" >
+    insert into goods_info (goods_info_id, goods_id, goods_name,
+      goods_weight, goods_num)
+    values
+    <foreach collection="list" item="item" separator=",">
+    (#{item.goodsInfoId}, #{item.goodsId}, #{item.goodsName},
+      #{item.goodsWeight}, #{item.goodsNum})
+    </foreach>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.GoodsInfo" >
+    update goods_info
+    set goods_id = #{goodsId,jdbcType=VARCHAR},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      goods_weight = #{goodsWeight,jdbcType=DOUBLE},
+      goods_num = #{goodsNum,jdbcType=INTEGER}
+    where goods_info_id = #{goodsInfoId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    from goods_info
+    where goods_info_id = #{goodsInfoId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByGoodsIdAndGoodsName" resultMap="BaseResultMap">
+    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    from goods_info
+    where goods_id = #{goodsId,jdbcType=VARCHAR} and goods_name = #{goodsName,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByGoodsId" resultMap="BaseResultMap" parameterType="java.lang.String"  >
+    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    from goods_info
+    where goods_id = #{goodsId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    from goods_info
+  </select>
+</mapper>
