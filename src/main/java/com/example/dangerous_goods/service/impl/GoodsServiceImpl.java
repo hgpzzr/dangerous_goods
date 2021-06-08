@@ -63,6 +63,8 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Value("${excel.filePath}")
 	private String filePath;
+	@Value("${img.url}")
+	private String imgUrl;
 
 	@Transactional
 	@Override
@@ -418,7 +420,7 @@ public class GoodsServiceImpl implements GoodsService {
 		wordTable1.add(2, 3, "物品负责人姓名", goods.getChargeName());
 		wordTable1.add(3, 1, "经办人手机", goods.getAgentPhone());
 		wordTable1.add(3, 3, "经办人姓名", goods.getAgentName());
-		wordTable1.add(4, 1, "货架号", goods.getShelfNumber());
+		wordTable1.add(4, 1, "存放地址", goods.getShelfNumber());
 		wordGo.addTable(wordTable1);
 		WordTable wordTable = new WordTable(goodsInfoList.size() + 1, 3,"row-height:1=5%,2=5%,3=5%,4=5%");
 		wordTable.add(1, 1, "物品名称", "规格型号（L/kg）", "数量(桶/瓶）");
@@ -427,8 +429,7 @@ public class GoodsServiceImpl implements GoodsService {
 			wordTable.add(i + 2, 1, goodsInfo.getGoodsName(), goodsInfo.getGoodsWeight().toString(), goodsInfo.getGoodsNum().toString());
 		}
 		wordGo.addTable(wordTable);
-		// TODO 将这里的地址改为服务器的地址
-		wordGo.addImg("C:\\Users\\HP\\Pictures\\Camera Roll\\2.jpg", " new-line:true; position: absolute; left: 10px; top:140px; width:300px; height:250px");
+		wordGo.addImg(imgUrl, " new-line:true; position: absolute; left: 10px; top:140px; width:300px; height:250px");
 		wordGo.create(filePath + goodsId + ".docx");
 
 		FileUtil.downloadFile(response, filePath + goodsId + ".docx");

@@ -1,10 +1,7 @@
 package com.example.dangerous_goods.controller;
 
 import com.example.dangerous_goods.VO.ResultVO;
-import com.example.dangerous_goods.form.AdminVerifyForm;
-import com.example.dangerous_goods.form.ExtensionForm;
-import com.example.dangerous_goods.form.LoginForm;
-import com.example.dangerous_goods.form.RegisterForm;
+import com.example.dangerous_goods.form.*;
 import com.example.dangerous_goods.service.DeliveryService;
 import com.example.dangerous_goods.service.GoodsService;
 import com.example.dangerous_goods.service.UserService;
@@ -89,5 +86,11 @@ public class UserController {
 	@ApiOperation("延期")
 	public ResultVO extension(ExtensionForm extensionForm){
 		return goodsService.extension(extensionForm);
+	}
+
+	@PostMapping("/addTeacher")
+	@ApiOperation("从excel中批量导入教师信息")
+	public ResultVO addTeacher(@RequestParam("file") MultipartFile file){
+		return userService.addTeacher(file);
 	}
 }

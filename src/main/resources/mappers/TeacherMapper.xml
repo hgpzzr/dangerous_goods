@@ -16,6 +16,14 @@
     values (#{jobId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{college,jdbcType=VARCHAR}
       )
   </insert>
+  <insert id="batchInsert" parameterType="com.example.dangerous_goods.entity.Teacher" >
+    insert into teacher (job_id, `name`, college
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.jobId}, #{item.name}, #{item.college})
+    </foreach>
+  </insert>
   <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.Teacher" >
     update teacher
     set `name` = #{name,jdbcType=VARCHAR},

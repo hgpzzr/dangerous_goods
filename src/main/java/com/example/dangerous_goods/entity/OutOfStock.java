@@ -20,7 +20,17 @@ public class OutOfStock implements Serializable {
 
     private String chargeName;
 
+    private String deliveryAddress;
+
     private static final long serialVersionUID = 1L;
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
 
     public String getChargeName() {
         return chargeName;
@@ -99,6 +109,7 @@ public class OutOfStock implements Serializable {
         sb.append(", agentName=").append(agentName);
         sb.append(", agentPhone=").append(agentPhone);
         sb.append(", chargeName=").append(chargeName);
+        sb.append(", deliveryAddress=").append(deliveryAddress);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

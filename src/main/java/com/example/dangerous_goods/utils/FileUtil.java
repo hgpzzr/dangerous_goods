@@ -79,7 +79,6 @@ public class FileUtil {
                 i = bis.read(buffer);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         log.info("文件下载中........");

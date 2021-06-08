@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
+import java.lang.management.BufferPoolMXBean;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -51,6 +52,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 
 	@Value("${word.filePath}")
 	private String filePath;
+	@Value("${img.url}")
+	private String imgUrl;
 
 	@Transactional
 	@Override
@@ -161,12 +164,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 		for (OutOfStock outOfStock : outOfStocks) {
 			DeliveryVO deliveryVO = new DeliveryVO();
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			BeanUtils.copyProperties(outOfStock,deliveryVO);
 			deliveryVO.setOutTime(simpleDateFormat.format(outOfStock.getOutTime()));
-			deliveryVO.setOutId(outOfStock.getOutId());
 			deliveryVO.setChargeName(goodsMapper.selectByPrimaryKey(outOfStock.getGoodsId()).getChargeName());
-			deliveryVO.setAgentName(outOfStock.getAgentName());
-			deliveryVO.setAgentPhone(outOfStock.getAgentPhone());
-			deliveryVO.setVerifyStatus(outOfStock.getVerifyStatus());
 			List<OutOfStockInfo> outOfStockInfoList = outOfStockInfoMapper.selectByOutId(outOfStock.getOutId());
 			deliveryVO.setOutOfStockInfoList(outOfStockInfoList);
 			deliveryVOList.add(deliveryVO);
@@ -192,7 +192,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		wordGo.addLine("出库申请表", "font-size:一号;font-width:bold;text-align:center");
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
 
-		WordTable wordTable1 = new WordTable(4, 4,"row-height:1=5%,2=5%,3=5%,4=5%");
+		WordTable wordTable1 = new WordTable(5, 4,"row-height:1=5%,2=5%,3=5%,4=5%,5=%5");
 		wordTable1.add(1, 1, "学院（中心）",goods.getCollege());
 		wordTable1.add(1, 3, "申请时间", sd.format(goods.getApplicationTime()));
 		wordTable1.add(2, 1, "物品负责人手机", goods.getChargePhone());
@@ -201,6 +201,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		wordTable1.add(3, 3, "经办人姓名", outOfStock.getAgentName());
 		wordTable1.add(4, 1, "入库时间", sd.format(goods.getApplicationTime()));
 		wordTable1.add(4, 3, "出库时间", sd.format(outOfStock.getOutTime()));
+		wordTable1.add(5, 1, "出库地址", outOfStock.getDeliveryAddress());
 		wordGo.addTable(wordTable1);
 		WordTable wordTable = new WordTable(outOfStockInfoList.size() + 1, 3,"row-height:1=5%,2=5%,3=5%,4=5%");
 		wordTable.add(1, 1, "物品名称", "规格型号（L/kg）", "数量(桶/瓶）");
@@ -209,8 +210,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 			wordTable.add(i + 2, 1, outOfStockInfo.getGoodsName(), outOfStockInfo.getGoodsWeight().toString(), outOfStockInfo.getGoodsNum().toString());
 		}
 		wordGo.addTable(wordTable);
-		// TODO 将这里的地址改为服务器的地址
-		wordGo.addImg("C:\\Users\\HP\\Pictures\\Camera Roll\\2.jpg", " new-line:true; position: absolute; left: 10px; top:140px; width:350px; height:300px");
+		wordGo.addImg(imgUrl, " new-line:true; position: absolute; left: 10px; top:140px; width:350px; height:300px");
 		wordGo.create(filePath + outId + ".docx");
 
 		FileUtil.downloadFile(response, filePath + outId + ".docx");

@@ -10,6 +10,7 @@
     <result column="agent_name" property="agentName" jdbcType="VARCHAR" />
     <result column="agent_phone" property="agentPhone" jdbcType="VARCHAR" />
     <result column="charge_name" property="chargeName" jdbcType="VARCHAR" />
+    <result column="delivery_address" property="deliveryAddress" jdbcType="VARCHAR" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from out_of_stock
@@ -17,9 +18,10 @@
   </delete>
   <insert id="insert" parameterType="com.example.dangerous_goods.entity.OutOfStock" >
     insert into out_of_stock (out_id, out_time, file_path, 
-      verify_status, goods_id,agent_name,agent_phone, charge_name)
+      verify_status, goods_id,agent_name,agent_phone, charge_name,delivery_address)
     values (#{outId,jdbcType=VARCHAR}, #{outTime,jdbcType=TIMESTAMP}, #{filePath,jdbcType=VARCHAR}, 
-      #{verifyStatus,jdbcType=INTEGER}, #{goodsId,jdbcType=VARCHAR},#{agentName,jdbcType=VARCHAR},#{agentPhone,jdbcType=VARCHAR},#{chargeName,jdbcType=VARCHAR})
+      #{verifyStatus,jdbcType=INTEGER}, #{goodsId,jdbcType=VARCHAR},#{agentName,jdbcType=VARCHAR},
+      #{agentPhone,jdbcType=VARCHAR},#{chargeName,jdbcType=VARCHAR},#{deliveryAddress,jdbcType=VARCHAR})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.OutOfStock" >
     update out_of_stock
@@ -29,25 +31,26 @@
       goods_id = #{goodsId,jdbcType=VARCHAR},
       agent_name = #{agentName,jdbcType=VARCHAR},
       agent_phone = #{agentPhone,jdbcType=VARCHAR},
-      charge_name = #{chargeName,jdbcType=VARCHAR}
+      charge_name = #{chargeName,jdbcType=VARCHAR},
+      delivery_address = #{deliveryAddress,jdbcType=VARCHAR}
     where out_id = #{outId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name
+    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name, delivery_address
     from out_of_stock
     where out_id = #{outId,jdbcType=VARCHAR}
   </select>
   <select id="selectAll" resultMap="BaseResultMap" >
-    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name
+    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name, delivery_address
     from out_of_stock
   </select>
   <select id="selectByVerifyStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name
+    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name, delivery_address
     from out_of_stock
     where verify_status = #{status,jdbcType=INTEGER}
   </select>
   <select id="selectByTeacherNameAndVerifyStatus" resultMap="BaseResultMap">
-    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name
+    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name, delivery_address
     from out_of_stock
     where verify_status = #{status,jdbcType=INTEGER}
     and charge_name = #{chargeName,jdbcType=VARCHAR}

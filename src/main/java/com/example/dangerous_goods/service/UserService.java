@@ -2,9 +2,11 @@ package com.example.dangerous_goods.service;
 
 import com.example.dangerous_goods.VO.ResultVO;
 import com.example.dangerous_goods.entity.User;
+import com.example.dangerous_goods.form.AddTeacherForm;
 import com.example.dangerous_goods.form.LoginForm;
 import com.example.dangerous_goods.form.RegisterForm;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,6 +45,9 @@ public interface UserService {
 	 * @return
 	 */
 	ResultVO register(RegisterForm registerForm);
+
+
+	ResultVO addTeacher(MultipartFile file);
 
 
 }

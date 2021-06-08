@@ -30,6 +30,10 @@ public class DeliveryForm {
 	@NotBlank(message = "负责人姓名不能为空")
 	private String chargeName;
 
+	@ApiModelProperty("出库地址")
+	@NotBlank(message = "出库地址不能为空")
+	private String deliveryAddress;
+
 	@ApiModelProperty("物品详情")
 	@NotEmpty(message = "物品详情不能为空")
 	private List<DeliveryInfoForm> deliveryInfoFormList;

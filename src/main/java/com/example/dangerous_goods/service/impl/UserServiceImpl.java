@@ -1,24 +1,33 @@
 package com.example.dangerous_goods.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.example.dangerous_goods.VO.GoodsVO;
 import com.example.dangerous_goods.VO.ResultVO;
 import com.example.dangerous_goods.dao.GoodsInfoMapper;
 import com.example.dangerous_goods.dao.GoodsMapper;
+import com.example.dangerous_goods.dao.TeacherMapper;
 import com.example.dangerous_goods.dao.UserMapper;
 import com.example.dangerous_goods.entity.Goods;
 import com.example.dangerous_goods.entity.GoodsInfo;
+import com.example.dangerous_goods.entity.Teacher;
 import com.example.dangerous_goods.entity.User;
 import com.example.dangerous_goods.enums.ResultEnum;
+import com.example.dangerous_goods.form.AddTeacherForm;
+import com.example.dangerous_goods.form.ExcelForm;
 import com.example.dangerous_goods.form.LoginForm;
 import com.example.dangerous_goods.form.RegisterForm;
+import com.example.dangerous_goods.listener.GoodsListener;
+import com.example.dangerous_goods.listener.TeacherListener;
 import com.example.dangerous_goods.security.JwtProperties;
 import com.example.dangerous_goods.security.JwtUserDetailServiceImpl;
 import com.example.dangerous_goods.service.UserService;
+import com.example.dangerous_goods.utils.FileUtil;
 import com.example.dangerous_goods.utils.GenerateIdUtil;
 import com.example.dangerous_goods.utils.JwtTokenUtil;
 import com.example.dangerous_goods.utils.ResultVOUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,8 +36,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +69,11 @@ public class UserServiceImpl implements UserService {
 	private JwtProperties jwtProperties;
 	@Autowired
 	private GenerateIdUtil generateIdUtil;
+	@Autowired
+	private TeacherMapper teacherMapper;
+
+	@Value("${excel.filePath}")
+	private String filePath;
 
 	@Override
 	public User getCurrentUser() {
@@ -121,6 +138,16 @@ public class UserServiceImpl implements UserService {
 			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 		}
 		return ResultVOUtil.success("注册成功");
+	}
+
+	@Override
+	public ResultVO addTeacher(MultipartFile file) {
+		String fileName = FileUtil.generateFileName(file);
+		FileUtil.upload(file, filePath, fileName);
+		// 这里默认读取第一个sheet
+		EasyExcel.read(filePath + fileName, AddTeacherForm.class, new TeacherListener(teacherMapper)).sheet().doRead();
+		FileUtil.deleteFile(filePath+fileName);
+		return ResultVOUtil.success("成功");
 	}
 
 

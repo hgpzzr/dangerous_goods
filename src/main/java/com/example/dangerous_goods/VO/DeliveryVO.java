@@ -25,5 +25,7 @@ public class DeliveryVO {
 
 	private String agentPhone;
 
+	private String deliveryAddress;
+
 	List<OutOfStockInfo> outOfStockInfoList;
 }
