@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @CrossOrigin
 @Api(tags = "web用户接口")
 public class UserController {

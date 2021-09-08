@@ -32,7 +32,7 @@ import java.util.Map;
  * @date 2021/5/31 17:11
  */
 @RestController
-@RequestMapping("/wx/user/")
+@RequestMapping("/api/wx/user/")
 public class WxMaUserController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

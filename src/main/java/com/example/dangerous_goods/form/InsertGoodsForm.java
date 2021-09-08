@@ -16,6 +16,10 @@ import java.util.List;
  */
 @Data
 public class InsertGoodsForm {
+	@ApiModelProperty("微信openid")
+	@NotBlank(message = "openid不能为空")
+	private String openId;
+
 	@ApiModelProperty("学院")
 	@NotNull(message = "学院不能为空")
 	private int college;

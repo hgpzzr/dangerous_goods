@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @CrossOrigin
 @Api(tags = "微信用户接口")
 public class WxUserController {

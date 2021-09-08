@@ -3,6 +3,7 @@ package com.example.dangerous_goods.form;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -19,9 +20,11 @@ public class GoodsInfoForm {
 
 	@ApiModelProperty("规格型号（L/kg）")
 	@NotNull(message = "规格型号不能为空")
+	@Min(0)
 	private Double goodsWeight;
 
 	@ApiModelProperty("数量")
 	@NotNull(message = "数量不能为空")
+	@Min(1)
 	private Integer goodsNum;
 }

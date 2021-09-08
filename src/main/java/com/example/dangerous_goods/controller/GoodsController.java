@@ -22,7 +22,7 @@ import javax.validation.Valid;
  */
 @RestController
 @Slf4j
-@RequestMapping("/goods")
+@RequestMapping("/api/goods")
 @CrossOrigin
 @Api(tags = "危险品入库接口")
 public class GoodsController {

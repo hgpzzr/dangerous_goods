@@ -58,6 +58,12 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Transactional
 	@Override
 	public ResultVO applyForDelivery(DeliveryForm deliveryForm) {
+		// 检查数量问题
+		for (DeliveryInfoForm deliveryInfoForm:deliveryForm.getDeliveryInfoFormList()){
+			if(deliveryInfoForm.getGoodsNum() < 1){
+				return ResultVOUtil.error(ResultEnum.DIGITAL_SPECIFICATION_ERROR);
+			}
+		}
 		// 检查该老师有无超期物品
 		Goods goods = goodsMapper.selectByPrimaryKey(deliveryForm.getGoodsId());
 		if (goods == null) {

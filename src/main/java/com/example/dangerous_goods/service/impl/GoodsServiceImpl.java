@@ -69,6 +69,17 @@ public class GoodsServiceImpl implements GoodsService {
 	@Transactional
 	@Override
 	public ResultVO insertGoods(InsertGoodsForm insertGoodsForm) {
+		// 检查数量问题
+		for (GoodsInfoForm goodsInfoForm : insertGoodsForm.getGoodsInfoFormList()) {
+			if (goodsInfoForm.getGoodsWeight() < 0 || goodsInfoForm.getGoodsNum() < 1) {
+				return ResultVOUtil.error(ResultEnum.DIGITAL_SPECIFICATION_ERROR);
+			}
+		}
+		// 检查是否是自己的老师
+		WxUser wxUser = wxUserMapper.selectByPrimaryKey(insertGoodsForm.getOpenId());
+		if (!wxUser.getTeacherName().equals(insertGoodsForm.getChargeName())) {
+			return ResultVOUtil.error(ResultEnum.NOT_SELF_TEACHER_ERROR);
+		}
 		// 检查该老师有无超期物品
 		List<Goods> goodsList = goodsMapper.selectByChargeNameAndTakeOutStatus(insertGoodsForm.getChargeName());
 		for (Goods goods : goodsList) {
@@ -248,7 +259,7 @@ public class GoodsServiceImpl implements GoodsService {
 		FileUtil.upload(file, filePath, fileName);
 		// 这里默认读取第一个sheet
 		EasyExcel.read(filePath + fileName, ExcelForm.class, new GoodsListener(goodsMapper, goodsInfoMapper)).sheet().doRead();
-		FileUtil.deleteFile(filePath+fileName);
+		FileUtil.deleteFile(filePath + fileName);
 		return ResultVOUtil.success("成功");
 
 	}
@@ -264,7 +275,7 @@ public class GoodsServiceImpl implements GoodsService {
 			LocalDate now = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			Period period = Period.between(oldDate, now);
 			if (period.getYears() >= 2 && period.getDays() >= 0) {
-				log.info("差{}年,{}月,{}天,老师：{}", period.getYears(), period.getMonths(),period.getDays(),goods.getChargeName());
+				log.info("差{}年,{}月,{}天,老师：{}", period.getYears(), period.getMonths(), period.getDays(), goods.getChargeName());
 				goods.setOverdueStatus(1);
 				goodsMapper.updateByPrimaryKey(goods);
 			}
@@ -293,16 +304,16 @@ public class GoodsServiceImpl implements GoodsService {
 	public ResultVO delete(DeleteForm deleteForm) {
 		WxUser wxUser = wxUserMapper.selectByPrimaryKey(deleteForm.getOpenId());
 		Goods goods = goodsMapper.selectByPrimaryKey(deleteForm.getGoodsId());
-		if(wxUser.getType() == 0 && !wxUser.getName().equals(goods.getAgentName())) {
+		if (wxUser.getType() == 0 && !wxUser.getName().equals(goods.getAgentName())) {
 			return ResultVOUtil.error(ResultEnum.NOT_ONESELF_ERROR);
 		}
-		if(wxUser.getType() == 0 && goods.getVerifyStatus() != 0){
+		if (wxUser.getType() == 0 && goods.getVerifyStatus() != 0) {
 			return ResultVOUtil.error(ResultEnum.STUDENT_ROLE_ERROR);
 		}
-		if(wxUser.getType() == 1 && !wxUser.getName().equals(goods.getChargeName())){
+		if (wxUser.getType() == 1 && !wxUser.getName().equals(goods.getChargeName())) {
 			return ResultVOUtil.error(ResultEnum.NOT_ONESELF_ERROR);
 		}
-		if(wxUser.getType() == 1 && goods.getVerifyStatus() == 2){
+		if (wxUser.getType() == 1 && goods.getVerifyStatus() == 2) {
 			return ResultVOUtil.error(ResultEnum.TEACHER_ROLE_ERROR);
 		}
 		// 删除
@@ -348,7 +359,7 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public ResultVO selectByStudentName(String openId) {
 		WxUser wxUser = wxUserMapper.selectByPrimaryKey(openId);
-		if(wxUser == null){
+		if (wxUser == null) {
 			return ResultVOUtil.error(ResultEnum.USER_NOT_EXIST_ERROR);
 		}
 		List<Goods> goodsList = goodsMapper.selectByStudentName(wxUser.getName());
@@ -373,13 +384,13 @@ public class GoodsServiceImpl implements GoodsService {
 		Date applicationTime = goods.getApplicationTime();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(applicationTime);
-		calendar.add(Calendar.YEAR,extensionForm.getYear());
-		calendar.add(Calendar.MONTH,extensionForm.getMonth());
-		calendar.add(Calendar.DATE,extensionForm.getDay());
+		calendar.add(Calendar.YEAR, extensionForm.getYear());
+		calendar.add(Calendar.MONTH, extensionForm.getMonth());
+		calendar.add(Calendar.DATE, extensionForm.getDay());
 		goods.setApplicationTime(calendar.getTime());
 		goods.setOverdueStatus(0);
 		int update = goodsMapper.updateByPrimaryKey(goods);
-		if(update != 1){
+		if (update != 1) {
 			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 		}
 		return ResultVOUtil.success("延期成功");
@@ -388,8 +399,8 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public ResultVO selectCollege() {
 		List<College> colleges = collegeMapper.selectAll();
-		List<CollegeVO> collegeVOList =  new ArrayList<>();
-		for (College college : colleges){
+		List<CollegeVO> collegeVOList = new ArrayList<>();
+		for (College college : colleges) {
 			CollegeVO collegeVO = new CollegeVO();
 			collegeVO.setText(college.getCollegeName());
 			collegeVO.setValue(college.getCollegeId());
@@ -404,7 +415,7 @@ public class GoodsServiceImpl implements GoodsService {
 		Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
 		// 检查是否审核
 		if (goods.getVerifyStatus() != 2) {
-			response.setHeader("state","1");
+			response.setHeader("state", "1");
 			return;
 		}
 		// 入库物品详情
@@ -413,7 +424,7 @@ public class GoodsServiceImpl implements GoodsService {
 		wordGo.addLine("入库申请表", "font-size:一号;font-width:bold;text-align:center");
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
 
-		WordTable wordTable1 = new WordTable(4, 4,"row-height:1=5%,2=5%,3=5%,4=5%");
+		WordTable wordTable1 = new WordTable(4, 4, "row-height:1=5%,2=5%,3=5%,4=5%");
 		wordTable1.add(1, 1, "学院（中心）", goods.getCollege());
 		wordTable1.add(1, 3, "申请时间", sd.format(goods.getApplicationTime()));
 		wordTable1.add(2, 1, "物品负责人手机", goods.getChargePhone());
@@ -422,7 +433,7 @@ public class GoodsServiceImpl implements GoodsService {
 		wordTable1.add(3, 3, "经办人姓名", goods.getAgentName());
 		wordTable1.add(4, 1, "存放地址", goods.getShelfNumber());
 		wordGo.addTable(wordTable1);
-		WordTable wordTable = new WordTable(goodsInfoList.size() + 1, 3,"row-height:1=5%,2=5%,3=5%,4=5%");
+		WordTable wordTable = new WordTable(goodsInfoList.size() + 1, 3, "row-height:1=5%,2=5%,3=5%,4=5%");
 		wordTable.add(1, 1, "物品名称", "规格型号（L/kg）", "数量(桶/瓶）");
 		for (int i = 0; i < goodsInfoList.size(); i++) {
 			GoodsInfo goodsInfo = goodsInfoList.get(i);

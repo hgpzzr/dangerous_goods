@@ -20,7 +20,7 @@ import javax.validation.Valid;
  */
 @RestController
 @Slf4j
-@RequestMapping("/delivery")
+@RequestMapping("/api/delivery")
 @CrossOrigin
 @Api(tags = "出库接口")
 public class DeliveryController {

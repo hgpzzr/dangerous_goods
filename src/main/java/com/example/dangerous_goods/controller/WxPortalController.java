@@ -17,7 +17,7 @@ import java.util.Objects;
  * @date 2021/5/31 17:38
  */
 @RestController
-@RequestMapping("/wx/portal/{appid}")
+@RequestMapping("/api/wx/portal/{appid}")
 public class WxPortalController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
