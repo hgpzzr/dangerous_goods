@@ -38,9 +38,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if (httpServletRequest.getMethod().equals("OPTIONS")) {
             log.info("浏览器的请求预处理");
             httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
-            httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
+            httpServletResponse.setHeader("Access-Control-Allow-Methods", "**");
             httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
-            httpServletResponse.setHeader("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type,Accept,Authorization,token,Cookie");
+            httpServletResponse.setHeader("Access-Control-Allow-Headers", "*");
             return;
         } else {
             String requestUrl = httpServletRequest.getRequestURI();

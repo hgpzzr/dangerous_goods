@@ -73,30 +73,30 @@
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
     from goods
-    where charge_name = #{chargeName,jdbcType=VARCHAR}
+    where charge_name = #{chargeName,jdbcType=VARCHAR} and take_out_status = 0
   </select>
   <select id="selectByChargeNameAndVerifyStatus" resultMap="BaseResultMap" >
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
     from goods
-    where charge_name = #{chargeName,jdbcType=VARCHAR} and verify_status = #{verifyStatus,jdbcType=INTEGER}
+    where charge_name = #{chargeName,jdbcType=VARCHAR} and verify_status = #{verifyStatus,jdbcType=INTEGER} and take_out_status = 0
   </select>
   <select id="selectReviewed" resultMap="BaseResultMap" >
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
     from goods
-    where charge_name = #{teacherName,jdbcType=VARCHAR} and (verify_status = 1 or verify_status = 2)
+    where charge_name = #{teacherName,jdbcType=VARCHAR} and (verify_status = 1 or verify_status = 2) and take_out_status = 0
   </select>
   <select id="selectByVerifyStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
     from goods
-    where verify_status = #{verifyStatus,jdbcType=INTEGER}
+    where verify_status = #{verifyStatus,jdbcType=INTEGER} and take_out_status = 0
   </select>
   <select id="selectAll" resultMap="BaseResultMap" >
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone, 
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
-    from goods
+    from goods where take_out_status = 0
   </select>
   <select id="selectByTakeOutStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
@@ -108,12 +108,12 @@
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
     from goods
-    where overdue_status = #{overdueStatus,jdbcType=INTEGER}
+    where overdue_status = #{overdueStatus,jdbcType=INTEGER} and take_out_status = 0
   </select>
   <select id="selectByStudentName" resultMap="BaseResultMap" parameterType="java.lang.String">
     select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
     agent_name, overdue_status, verify_status, shelf_number, take_out_status
     from goods
-    where agent_name = #{studentName,jdbcType=VARCHAR}
+    where agent_name = #{studentName,jdbcType=VARCHAR} and take_out_status = 0
   </select>
 </mapper>

@@ -34,10 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author hgp
@@ -62,7 +59,11 @@ public class GoodsServiceImpl implements GoodsService {
 	private CollegeMapper collegeMapper;
 
 	@Value("${excel.filePath}")
-	private String filePath;
+	private String excelFilePath;
+	@Value("${word.filePath}")
+	private String wordFilePath;
+	@Value("${word.inTemplatePath}")
+	private String inTemplatePath;
 	@Value("${img.url}")
 	private String imgUrl;
 
@@ -227,7 +228,7 @@ public class GoodsServiceImpl implements GoodsService {
 		Date date = new Date();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String format = simpleDateFormat.format(date);
-		String filename = filePath + format + ".xlsx";
+		String filename = excelFilePath + format + ".xlsx";
 		// 2 调用easyexcel里面的方法实现写操作
 		// write方法两个参数：第一个参数文件路径名称，第二个参数实体类class
 		List<ExcelVO> excelVOList = new ArrayList<>();
@@ -256,10 +257,10 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public ResultVO importExcel(MultipartFile file) {
 		String fileName = FileUtil.generateFileName(file);
-		FileUtil.upload(file, filePath, fileName);
+		FileUtil.upload(file, excelFilePath, fileName);
 		// 这里默认读取第一个sheet
-		EasyExcel.read(filePath + fileName, ExcelForm.class, new GoodsListener(goodsMapper, goodsInfoMapper)).sheet().doRead();
-		FileUtil.deleteFile(filePath + fileName);
+		EasyExcel.read(excelFilePath + fileName, ExcelForm.class, new GoodsListener(goodsMapper, goodsInfoMapper)).sheet().doRead();
+		FileUtil.deleteFile(excelFilePath + fileName);
 		return ResultVOUtil.success("成功");
 
 	}
@@ -420,30 +421,57 @@ public class GoodsServiceImpl implements GoodsService {
 		}
 		// 入库物品详情
 		List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goodsId);
-		WordGo wordGo = new WordGo();
-		wordGo.addLine("入库申请表", "font-size:一号;font-width:bold;text-align:center");
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
+//		WordGo wordGo = new WordGo();
+//		wordGo.addLine("入库申请表", "font-size:一号;font-width:bold;text-align:center");
+//
+//		WordTable wordTable1 = new WordTable(4, 4, "row-height:1=5%,2=5%,3=5%,4=5%");
+//		wordTable1.add(1, 1, "学院（中心）", goods.getCollege());
+//		wordTable1.add(1, 3, "申请时间", sd.format(goods.getApplicationTime()));
+//		wordTable1.add(2, 1, "物品负责人手机", goods.getChargePhone());
+//		wordTable1.add(2, 3, "物品负责人姓名", goods.getChargeName());
+//		wordTable1.add(3, 1, "经办人手机", goods.getAgentPhone());
+//		wordTable1.add(3, 3, "经办人姓名", goods.getAgentName());
+//		wordTable1.add(4, 1, "存放地址", goods.getShelfNumber());
+//		wordGo.addTable(wordTable1);
+//		WordTable wordTable = new WordTable(goodsInfoList.size() + 1, 3, "row-height:1=5%,2=5%,3=5%,4=5%");
+//		wordTable.add(1, 1, "物品名称", "规格型号（L/kg）", "数量(桶/瓶）");
+//		for (int i = 0; i < goodsInfoList.size(); i++) {
+//			GoodsInfo goodsInfo = goodsInfoList.get(i);
+//			wordTable.add(i + 2, 1, goodsInfo.getGoodsName(), goodsInfo.getGoodsWeight().toString(), goodsInfo.getGoodsNum().toString());
+//		}
+//		wordGo.addTable(wordTable);
+//		wordGo.addImg(imgUrl, " new-line:true; position: absolute; left: 10px; top:140px; width:300px; height:250px");
+//		wordGo.create(filePath + goodsId + ".docx");
+// 模板全的路径
+		String templatePath = inTemplatePath;
+		// 输出位置
+		String outPath = wordFilePath+goods.getGoodsId()+".docx";
 
-		WordTable wordTable1 = new WordTable(4, 4, "row-height:1=5%,2=5%,3=5%,4=5%");
-		wordTable1.add(1, 1, "学院（中心）", goods.getCollege());
-		wordTable1.add(1, 3, "申请时间", sd.format(goods.getApplicationTime()));
-		wordTable1.add(2, 1, "物品负责人手机", goods.getChargePhone());
-		wordTable1.add(2, 3, "物品负责人姓名", goods.getChargeName());
-		wordTable1.add(3, 1, "经办人手机", goods.getAgentPhone());
-		wordTable1.add(3, 3, "经办人姓名", goods.getAgentName());
-		wordTable1.add(4, 1, "存放地址", goods.getShelfNumber());
-		wordGo.addTable(wordTable1);
-		WordTable wordTable = new WordTable(goodsInfoList.size() + 1, 3, "row-height:1=5%,2=5%,3=5%,4=5%");
-		wordTable.add(1, 1, "物品名称", "规格型号（L/kg）", "数量(桶/瓶）");
-		for (int i = 0; i < goodsInfoList.size(); i++) {
+		Map<String, Object> paramMap = new HashMap<>(16);
+		// 普通的占位符示例 参数数据结构 {str,str}
+		paramMap.put("college",goods.getCollege());
+		paramMap.put("applicationTime", sd.format(goods.getApplicationTime()));
+		paramMap.put("chargePhone", goods.getChargePhone());
+		paramMap.put("chargeName", goods.getChargePhone());
+		paramMap.put("agentPhone", goods.getAgentPhone());
+		paramMap.put("agentName", goods.getAgentName());
+		paramMap.put("shelfNumber", goods.getShelfNumber());
+		int size = goodsInfoList.size();
+		for (int i = 0; i < size; i++) {
 			GoodsInfo goodsInfo = goodsInfoList.get(i);
-			wordTable.add(i + 2, 1, goodsInfo.getGoodsName(), goodsInfo.getGoodsWeight().toString(), goodsInfo.getGoodsNum().toString());
+			paramMap.put("goodsName"+ i,goodsInfo.getGoodsName());
+			paramMap.put("weight"+ i,goodsInfo.getGoodsWeight());
+			paramMap.put("number"+ i,goodsInfo.getGoodsNum());
 		}
-		wordGo.addTable(wordTable);
-		wordGo.addImg(imgUrl, " new-line:true; position: absolute; left: 10px; top:140px; width:300px; height:250px");
-		wordGo.create(filePath + goodsId + ".docx");
-
-		FileUtil.downloadFile(response, filePath + goodsId + ".docx");
-		FileUtil.deleteFile(filePath + goodsId + ".docx");
+		for (int i = size; i < 4; i++) {
+			paramMap.put("goodsName"+ i,"");
+			paramMap.put("weight"+ i,"");
+			paramMap.put("number"+ i,"");
+		}
+		com.example.dangerous_goods.utils.DynWordUtils.process(paramMap, templatePath, outPath);
+		log.info("filePath:{}",wordFilePath+goodsId+".docx");
+		FileUtil.downloadFile(response, wordFilePath + goodsId + ".docx");
+		FileUtil.deleteFile(wordFilePath + goodsId + ".docx");
 	}
 }
