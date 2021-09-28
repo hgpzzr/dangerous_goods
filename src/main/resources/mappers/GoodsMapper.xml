@@ -12,7 +12,9 @@
     <result column="overdue_status" property="overdueStatus" jdbcType="INTEGER" />
     <result column="verify_status" property="verifyStatus" jdbcType="INTEGER" />
     <result column="shelf_number" property="shelfNumber" jdbcType="VARCHAR" />
+    <result column="room_number" property="roomNumber" jdbcType="VARCHAR" />
     <result column="take_out_status" property="takeOutStatus" jdbcType="INTEGER" />
+    <result column="access_control" property="accessControl" jdbcType="INTEGER" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from goods
@@ -22,23 +24,23 @@
     insert into goods (goods_id, college, application_time, 
       charge_phone, charge_name, agent_phone, 
       agent_name, overdue_status, verify_status, 
-      shelf_number, take_out_status)
+      shelf_number, take_out_status,room_number)
     values (#{goodsId,jdbcType=VARCHAR}, #{college,jdbcType=VARCHAR}, #{applicationTime,jdbcType=TIMESTAMP}, 
       #{chargePhone,jdbcType=VARCHAR}, #{chargeName,jdbcType=VARCHAR}, #{agentPhone,jdbcType=VARCHAR}, 
       #{agentName,jdbcType=VARCHAR}, #{overdueStatus,jdbcType=INTEGER}, #{verifyStatus,jdbcType=INTEGER}, 
-      #{shelfNumber,jdbcType=VARCHAR}, #{takeOutStatus,jdbcType=INTEGER})
+      #{shelfNumber,jdbcType=VARCHAR}, #{takeOutStatus,jdbcType=INTEGER},#{roomNumber,jdbcType=VARCHAR})
   </insert>
   <insert id="batchInsert" parameterType="java.util.List" >
     insert into goods (goods_id, college, application_time,
       charge_phone, charge_name, agent_phone,
       agent_name, overdue_status, verify_status,
-      shelf_number, take_out_status)
+      shelf_number, take_out_status,roomNumber)
     values
     <foreach collection="list" item="item" separator=",">
     (#{item.goodsId}, #{item.college}, #{item.applicationTime},
       #{item.chargePhone}, #{item.chargeName}, #{item.agentPhone},
       #{item.agentName}, #{item.overdueStatus}, #{item.verifyStatus},
-      #{item.shelfNumber}, #{item.takeOutStatus})
+      #{item.shelfNumber}, #{item.takeOutStatus},#{roomNumber})
     </foreach>
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.Goods" >
@@ -52,67 +54,60 @@
       overdue_status = #{overdueStatus,jdbcType=INTEGER},
       verify_status = #{verifyStatus,jdbcType=INTEGER},
       shelf_number = #{shelfNumber,jdbcType=VARCHAR},
-      take_out_status = #{takeOutStatus,jdbcType=INTEGER}
+      room_number = #{roomNumber,jdbcType=VARCHAR},
+      take_out_status = #{takeOutStatus,jdbcType=INTEGER},
+      access_control = #{accessControl,jdbcType=INTEGER}
     where goods_id = #{goodsId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone, 
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where goods_id = #{goodsId,jdbcType=VARCHAR}
   </select>
   <select id="selectByChargeNameAndTakeOutStatus" resultMap="BaseResultMap" >
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where charge_name = #{chargeName,jdbcType=VARCHAR}
     and take_out_status = 0
+    and verify_status = 2
     order by application_time desc
   </select>
   <select id="selectByChargeName" resultMap="BaseResultMap" >
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where charge_name = #{chargeName,jdbcType=VARCHAR} and take_out_status = 0
   </select>
   <select id="selectByChargeNameAndVerifyStatus" resultMap="BaseResultMap" >
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where charge_name = #{chargeName,jdbcType=VARCHAR} and verify_status = #{verifyStatus,jdbcType=INTEGER} and take_out_status = 0
   </select>
   <select id="selectReviewed" resultMap="BaseResultMap" >
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
-    where charge_name = #{teacherName,jdbcType=VARCHAR} and (verify_status = 1 or verify_status = 2) and take_out_status = 0
+    where charge_name = #{teacherName,jdbcType=VARCHAR} and (verify_status = 1 or verify_status = 2 or verify_status = 3) and take_out_status = 0
   </select>
   <select id="selectByVerifyStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where verify_status = #{verifyStatus,jdbcType=INTEGER} and take_out_status = 0
   </select>
   <select id="selectAll" resultMap="BaseResultMap" >
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone, 
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods where take_out_status = 0
   </select>
   <select id="selectByTakeOutStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where take_out_status = #{takeOutStatus,jdbcType=INTEGER}
   </select>
   <select id="selectByOverdueStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where overdue_status = #{overdueStatus,jdbcType=INTEGER} and take_out_status = 0
   </select>
   <select id="selectByStudentName" resultMap="BaseResultMap" parameterType="java.lang.String">
-    select goods_id, college, application_time, charge_phone, charge_name, agent_phone,
-    agent_name, overdue_status, verify_status, shelf_number, take_out_status
+    select *
     from goods
     where agent_name = #{studentName,jdbcType=VARCHAR} and take_out_status = 0
   </select>

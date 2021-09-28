@@ -26,6 +26,10 @@ public class Goods implements Serializable {
 
     private Integer takeOutStatus;
 
+    private String roomNumber;
+
+    private Integer accessControl;
+
     private static final long serialVersionUID = 1L;
 
     public String getGoodsId() {
@@ -84,6 +88,14 @@ public class Goods implements Serializable {
         this.agentName = agentName == null ? null : agentName.trim();
     }
 
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber == null ? null : roomNumber.trim();
+    }
+
     public Integer getOverdueStatus() {
         return overdueStatus;
     }
@@ -116,6 +128,14 @@ public class Goods implements Serializable {
         this.takeOutStatus = takeOutStatus;
     }
 
+    public Integer getAccessControl() {
+        return accessControl;
+    }
+
+    public void setAccessControl(Integer accessControl) {
+        this.accessControl = accessControl;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -133,6 +153,8 @@ public class Goods implements Serializable {
         sb.append(", verifyStatus=").append(verifyStatus);
         sb.append(", shelfNumber=").append(shelfNumber);
         sb.append(", takeOutStatus=").append(takeOutStatus);
+        sb.append(", roomNumber=").append(roomNumber);
+        sb.append(", accessControl=").append(accessControl);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

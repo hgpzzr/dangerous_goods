@@ -52,7 +52,12 @@
   <select id="selectByTeacherNameAndVerifyStatus" resultMap="BaseResultMap">
     select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name, delivery_address
     from out_of_stock
-    where verify_status = #{status,jdbcType=INTEGER}
+    where (verify_status = #{status,jdbcType=INTEGER} or verify_status = 0 or verify_status = 2)
     and charge_name = #{chargeName,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByGoodsId" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select out_id, out_time, file_path, verify_status, goods_id, agent_name, agent_phone, charge_name, delivery_address
+    from out_of_stock
+    where goods_id = #{goodsId,jdbcType=INTEGER}
   </select>
 </mapper>

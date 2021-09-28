@@ -63,8 +63,8 @@ public class DeliveryServiceImpl implements DeliveryService {
 	@Override
 	public ResultVO applyForDelivery(DeliveryForm deliveryForm) {
 		// 检查数量问题
-		for (DeliveryInfoForm deliveryInfoForm:deliveryForm.getDeliveryInfoFormList()){
-			if(deliveryInfoForm.getGoodsNum() < 1){
+		for (DeliveryInfoForm deliveryInfoForm : deliveryForm.getDeliveryInfoFormList()) {
+			if (deliveryInfoForm.getGoodsNum() < 1) {
 				return ResultVOUtil.error(ResultEnum.DIGITAL_SPECIFICATION_ERROR);
 			}
 		}
@@ -75,14 +75,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 		}
 		List<Goods> goodsList = goodsMapper.selectByChargeNameAndTakeOutStatus(goods.getChargeName());
 		for (Goods goods1 : goodsList) {
-			if (goods1.getOverdueStatus() == 1) {
+			if (goods1.getAccessControl() == 1) {
 				return ResultVOUtil.error(ResultEnum.OVERDUE_ERROR);
 			}
 		}
 		// 检查要出库的数量是否超出库存
-		for (DeliveryInfoForm deliveryInfoForm : deliveryForm.getDeliveryInfoFormList()){
+		for (DeliveryInfoForm deliveryInfoForm : deliveryForm.getDeliveryInfoFormList()) {
 			GoodsInfo goodsInfo = goodsInfoMapper.selectByGoodsIdAndGoodsName(goods.getGoodsId(), deliveryInfoForm.getGoodsName());
-			if(goodsInfo.getGoodsNum() < deliveryInfoForm.getGoodsNum()){
+			if (goodsInfo.getGoodsNum() < deliveryInfoForm.getGoodsNum()) {
 				return ResultVOUtil.error(ResultEnum.UNDER_STOCK_ERROR);
 			}
 		}
@@ -144,8 +144,9 @@ public class DeliveryServiceImpl implements DeliveryService {
 			if (goodsInfo.getGoodsNum() != 0) {
 				flag = 1;
 				break;
-			}else {
-				goodsInfoMapper.deleteByPrimaryKey(goodsInfo.getGoodsInfoId());
+			} else {
+				goodsInfo.setTakeOutStatus(1);
+				goodsInfoMapper.updateByPrimaryKey(goodsInfo);
 			}
 		}
 		// 如果库存为0 则更新数据 将取出状态置为1
@@ -172,9 +173,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 		List<DeliveryVO> deliveryVOList = new ArrayList<>();
 		List<OutOfStock> outOfStocks = outOfStockMapper.selectByVerifyStatus(0);
 		for (OutOfStock outOfStock : outOfStocks) {
+			log.info("outOfStock:{}", outOfStock.toString());
 			DeliveryVO deliveryVO = new DeliveryVO();
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			BeanUtils.copyProperties(outOfStock,deliveryVO);
+			BeanUtils.copyProperties(outOfStock, deliveryVO);
 			deliveryVO.setOutTime(simpleDateFormat.format(outOfStock.getOutTime()));
 			deliveryVO.setChargeName(goodsMapper.selectByPrimaryKey(outOfStock.getGoodsId()).getChargeName());
 			List<OutOfStockInfo> outOfStockInfoList = outOfStockInfoMapper.selectByOutId(outOfStock.getOutId());
@@ -190,7 +192,7 @@ public class DeliveryServiceImpl implements DeliveryService {
 		OutOfStock outOfStock = outOfStockMapper.selectByPrimaryKey(outId);
 		// 检查是否审核
 		if (outOfStock.getVerifyStatus() != 1) {
-			response.setHeader("state","1");
+			response.setHeader("state", "1");
 //			throw new RuntimeException("管理员未审核，不能下载");
 			return;
 		}
@@ -230,11 +232,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 		// 模板全的路径
 		String templatePath = outTemplatePath;
 		// 输出位置
-		String outPath = filePath+outOfStock.getOutId()+".docx";
+		String outPath = filePath + outOfStock.getOutId() + ".docx";
 
 		Map<String, Object> paramMap = new HashMap<>(16);
 		// 普通的占位符示例 参数数据结构 {str,str}
-		paramMap.put("college",goods.getCollege());
+		paramMap.put("college", goods.getCollege());
 		paramMap.put("applicationTime", sd.format(outOfStock.getOutTime()));
 		paramMap.put("chargePhone", goods.getChargePhone());
 		paramMap.put("chargeName", goods.getChargePhone());
@@ -243,14 +245,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 		paramMap.put("inTime", sd.format(goods.getApplicationTime()));
 		paramMap.put("outTime", sd.format(outOfStock.getOutTime()));
 		paramMap.put("deliveryAddress", outOfStock.getDeliveryAddress());
-		for (OutOfStockInfo outOfStockInfo : outOfStockInfoList){
-			paramMap.put("goodsName",outOfStockInfo.getGoodsName());
+		for (OutOfStockInfo outOfStockInfo : outOfStockInfoList) {
+			paramMap.put("goodsName", outOfStockInfo.getGoodsName());
 			paramMap.put("weight", outOfStockInfo.getGoodsWeight());
 			paramMap.put("number", outOfStockInfo.getGoodsNum());
 		}
 		com.example.dangerous_goods.utils.DynWordUtils.process(paramMap, templatePath, outPath);
 		FileUtil.downloadFile(response, filePath + outId + ".docx");
-		FileUtil.deleteFile(filePath + outId + ".docx");
+//		FileUtil.deleteFile(filePath + outId + ".docx");
 	}
 
 	@Override
@@ -268,5 +270,46 @@ public class DeliveryServiceImpl implements DeliveryService {
 			deliveryVOList.add(deliveryVO);
 		}
 		return ResultVOUtil.success(deliveryVOList);
+	}
+
+	@Override
+	public ResultVO selectItemsUnderReview(String goodsId, String goodsName) {
+		if ("".equals(goodsId) || "".equals(goodsName)) {
+			return ResultVOUtil.error(ResultEnum.PARAM_NULL_ERROR);
+		}
+		int sum = 0;
+		List<OutOfStock> outOfStockList = outOfStockMapper.selectByGoodsId(goodsId);
+		for (OutOfStock outOfStock : outOfStockList) {
+			if (outOfStock.getVerifyStatus() == 0) {
+				List<OutOfStockInfo> outOfStockInfoList = outOfStockInfoMapper.selectByOutId(outOfStock.getOutId());
+				for (OutOfStockInfo outOfStockInfo : outOfStockInfoList) {
+					if (goodsName.equals(outOfStockInfo.getGoodsName())) {
+						sum += outOfStockInfo.getGoodsNum();
+					}
+				}
+			}
+		}
+		List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goodsId);
+		for (GoodsInfo goodsInfo : goodsInfoList){
+			if(goodsName.equals(goodsInfo.getGoodsName())){
+				sum = goodsInfo.getGoodsNum() - sum;
+				break;
+			}
+		}
+			return ResultVOUtil.success(sum);
+	}
+
+	@Override
+	public ResultVO adminRefuse(String outId) {
+		if ("".equals(outId)) {
+			return ResultVOUtil.error(ResultEnum.PARAM_NULL_ERROR);
+		}
+		OutOfStock outOfStock = outOfStockMapper.selectByPrimaryKey(outId);
+		outOfStock.setVerifyStatus(2);
+		int update = outOfStockMapper.updateByPrimaryKey(outOfStock);
+		if (update != 1) {
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		return ResultVOUtil.success("拒绝成功");
 	}
 }

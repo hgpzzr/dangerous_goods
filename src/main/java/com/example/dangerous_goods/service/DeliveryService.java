@@ -47,4 +47,19 @@ public interface DeliveryService {
 	 * @return
 	 */
 	ResultVO browseReviewedDelivery(String teacherName);
+
+	/**
+	 * 查询某一物品正在审核的物品数量
+	 * @param goodsId
+	 * @param goodsName
+	 * @return
+	 */
+	ResultVO selectItemsUnderReview(String goodsId,String goodsName);
+
+	/**
+	 * 管理员拒绝出库申请
+	 * @param outId
+	 * @return
+	 */
+	ResultVO adminRefuse(String outId);
 }

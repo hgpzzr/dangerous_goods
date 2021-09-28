@@ -84,7 +84,7 @@ public class GoodsServiceImpl implements GoodsService {
 		// 检查该老师有无超期物品
 		List<Goods> goodsList = goodsMapper.selectByChargeNameAndTakeOutStatus(insertGoodsForm.getChargeName());
 		for (Goods goods : goodsList) {
-			if (goods.getOverdueStatus() == 1) {
+			if (goods.getAccessControl() == 1) {
 				return ResultVOUtil.error(ResultEnum.OVERDUE_ERROR);
 			}
 		}
@@ -101,6 +101,7 @@ public class GoodsServiceImpl implements GoodsService {
 		// 初始化状态
 		goods.setOverdueStatus(0);
 		goods.setVerifyStatus(0);
+		goods.setTakeOutStatus(0);
 		// 将物品信息插入数据库中
 		int insert = goodsMapper.insert(goods);
 		if (insert != 1) {
@@ -164,6 +165,8 @@ public class GoodsServiceImpl implements GoodsService {
 		goods.setVerifyStatus(2);
 		// 设置货架号
 		goods.setShelfNumber(adminVerifyForm.getShelfNumber());
+		// 设置房间号
+		goods.setRoomNumber(adminVerifyForm.getRoomNumber());
 		// 设置取出状态
 		goods.setTakeOutStatus(0);
 		// 更新数据库
@@ -345,6 +348,7 @@ public class GoodsServiceImpl implements GoodsService {
 		List<Goods> goodsList = goodsMapper.selectByChargeName(teacherName);
 		List<GoodsVO> goodsVOList = new ArrayList<>();
 		for (Goods goods : goodsList) {
+			log.info("goods:{}", goods.toString());
 			GoodsVO goodsVO = new GoodsVO();
 			BeanUtils.copyProperties(goods, goodsVO);
 			// 设置时间
@@ -383,8 +387,12 @@ public class GoodsServiceImpl implements GoodsService {
 	public ResultVO extension(ExtensionForm extensionForm) {
 		Goods goods = goodsMapper.selectByPrimaryKey(extensionForm.getGoodsId());
 		Date applicationTime = goods.getApplicationTime();
+//		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(applicationTime);
+//		calendar.setTime(date);
+//		calendar.add(Calendar.YEAR,-1);
+//		calendar.add(Calendar.MONTH,-6);
 		calendar.add(Calendar.YEAR, extensionForm.getYear());
 		calendar.add(Calendar.MONTH, extensionForm.getMonth());
 		calendar.add(Calendar.DATE, extensionForm.getDay());
@@ -422,56 +430,109 @@ public class GoodsServiceImpl implements GoodsService {
 		// 入库物品详情
 		List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goodsId);
 		SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
-//		WordGo wordGo = new WordGo();
-//		wordGo.addLine("入库申请表", "font-size:一号;font-width:bold;text-align:center");
-//
-//		WordTable wordTable1 = new WordTable(4, 4, "row-height:1=5%,2=5%,3=5%,4=5%");
-//		wordTable1.add(1, 1, "学院（中心）", goods.getCollege());
-//		wordTable1.add(1, 3, "申请时间", sd.format(goods.getApplicationTime()));
-//		wordTable1.add(2, 1, "物品负责人手机", goods.getChargePhone());
-//		wordTable1.add(2, 3, "物品负责人姓名", goods.getChargeName());
-//		wordTable1.add(3, 1, "经办人手机", goods.getAgentPhone());
-//		wordTable1.add(3, 3, "经办人姓名", goods.getAgentName());
-//		wordTable1.add(4, 1, "存放地址", goods.getShelfNumber());
-//		wordGo.addTable(wordTable1);
-//		WordTable wordTable = new WordTable(goodsInfoList.size() + 1, 3, "row-height:1=5%,2=5%,3=5%,4=5%");
-//		wordTable.add(1, 1, "物品名称", "规格型号（L/kg）", "数量(桶/瓶）");
-//		for (int i = 0; i < goodsInfoList.size(); i++) {
-//			GoodsInfo goodsInfo = goodsInfoList.get(i);
-//			wordTable.add(i + 2, 1, goodsInfo.getGoodsName(), goodsInfo.getGoodsWeight().toString(), goodsInfo.getGoodsNum().toString());
-//		}
-//		wordGo.addTable(wordTable);
-//		wordGo.addImg(imgUrl, " new-line:true; position: absolute; left: 10px; top:140px; width:300px; height:250px");
-//		wordGo.create(filePath + goodsId + ".docx");
+
 // 模板全的路径
 		String templatePath = inTemplatePath;
 		// 输出位置
-		String outPath = wordFilePath+goods.getGoodsId()+".docx";
+		String outPath = wordFilePath + goods.getGoodsId() + ".docx";
 
 		Map<String, Object> paramMap = new HashMap<>(16);
 		// 普通的占位符示例 参数数据结构 {str,str}
-		paramMap.put("college",goods.getCollege());
+		paramMap.put("college", goods.getCollege());
 		paramMap.put("applicationTime", sd.format(goods.getApplicationTime()));
 		paramMap.put("chargePhone", goods.getChargePhone());
 		paramMap.put("chargeName", goods.getChargePhone());
 		paramMap.put("agentPhone", goods.getAgentPhone());
 		paramMap.put("agentName", goods.getAgentName());
 		paramMap.put("shelfNumber", goods.getShelfNumber());
+		paramMap.put("roomNumber", goods.getRoomNumber());
+		log.info("goods.getRoomNumber():{}", goods.getRoomNumber());
 		int size = goodsInfoList.size();
 		for (int i = 0; i < size; i++) {
 			GoodsInfo goodsInfo = goodsInfoList.get(i);
-			paramMap.put("goodsName"+ i,goodsInfo.getGoodsName());
-			paramMap.put("weight"+ i,goodsInfo.getGoodsWeight());
-			paramMap.put("number"+ i,goodsInfo.getGoodsNum());
+			paramMap.put("goodsName" + i, goodsInfo.getGoodsName());
+			paramMap.put("weight" + i, goodsInfo.getGoodsWeight());
+			paramMap.put("number" + i, goodsInfo.getGoodsNum());
 		}
 		for (int i = size; i < 4; i++) {
-			paramMap.put("goodsName"+ i,"");
-			paramMap.put("weight"+ i,"");
-			paramMap.put("number"+ i,"");
+			paramMap.put("goodsName" + i, "");
+			paramMap.put("weight" + i, "");
+			paramMap.put("number" + i, "");
 		}
 		com.example.dangerous_goods.utils.DynWordUtils.process(paramMap, templatePath, outPath);
-		log.info("filePath:{}",wordFilePath+goodsId+".docx");
+		log.info("filePath:{}", wordFilePath + goodsId + ".docx");
 		FileUtil.downloadFile(response, wordFilePath + goodsId + ".docx");
-		FileUtil.deleteFile(wordFilePath + goodsId + ".docx");
+//		FileUtil.deleteFile(wordFilePath + goodsId + ".docx");
+	}
+
+	@Override
+	public ResultVO adminRefuse(String goodsId) {
+		Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
+		goods.setVerifyStatus(3);
+		int update = goodsMapper.updateByPrimaryKey(goods);
+		if (update != 1) {
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		return ResultVOUtil.success("拒绝成功");
+	}
+
+	@Override
+	public ResultVO selectAllGoods() {
+		List<Goods> goodsList = goodsMapper.selectByVerifyStatus(2);
+		List<GoodsVO> goodsVOList = new ArrayList<>();
+		for (Goods goods : goodsList) {
+			GoodsVO goodsVO = new GoodsVO();
+			BeanUtils.copyProperties(goods, goodsVO);
+			List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goods.getGoodsId());
+			goodsVO.setGoodsInfoList(goodsInfoList);
+			goodsVOList.add(goodsVO);
+		}
+		return ResultVOUtil.success(goodsVOList);
+	}
+
+	@Override
+	public ResultVO updateAccessControl(UpdateAccessControlForm form) {
+		List<Goods> goodsList = goodsMapper.selectByChargeName(form.getChargeName());
+		for (Goods goods : goodsList) {
+			goods.setAccessControl(form.getAccessControl());
+			int update = goodsMapper.updateByPrimaryKey(goods);
+			if (update != 1) {
+				return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+			}
+		}
+		return ResultVOUtil.success("更新成功");
+	}
+
+	@Override
+	public ResultVO checkAccessControl(String chargeName) {
+		List<Goods> goodsList = goodsMapper.selectByChargeName(chargeName);
+		for (Goods goods : goodsList) {
+			if(goods.getAccessControl() == 1){
+				return ResultVOUtil.success(false);
+			}
+		}
+		return ResultVOUtil.success(true);
+	}
+
+	@Override
+	public ResultVO updateGoods(UpdateGodsForm form) {
+		Goods goods = goodsMapper.selectByPrimaryKey(form.getGoodsId());
+		BeanUtils.copyProperties(form,goods);
+		int update = goodsMapper.updateByPrimaryKey(goods);
+		if(update != 1){
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		return ResultVOUtil.success("更新成功");
+	}
+
+	@Override
+	public ResultVO updateCharge(UpdateChargeForm form) {
+		Goods goods = goodsMapper.selectByPrimaryKey(form.getGoodsId());
+		BeanUtils.copyProperties(form,goods);
+		int update = goodsMapper.updateByPrimaryKey(goods);
+		if(update != 1){
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		return ResultVOUtil.success("更新成功");
 	}
 }

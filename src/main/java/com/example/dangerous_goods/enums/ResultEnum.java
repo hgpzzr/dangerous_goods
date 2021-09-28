@@ -27,6 +27,7 @@ public enum  ResultEnum {
     UNDER_STOCK_ERROR(15,"库存不足"),
     NOT_SELF_TEACHER_ERROR(16,"只能填写自己的指导老师"),
     DIGITAL_SPECIFICATION_ERROR(17,"数字不符合规范"),
+    PARAM_NULL_ERROR(18,"参数不能为空"),
 
 
 

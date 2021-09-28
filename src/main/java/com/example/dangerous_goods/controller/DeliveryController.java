@@ -60,4 +60,16 @@ public class DeliveryController {
 	public ResultVO browseReviewedDelivery(String teacherName){
 		return deliveryService.browseReviewedDelivery(teacherName);
 	}
+
+	@GetMapping("/numberToBeReviewed")
+	@ApiOperation("查询待审核的物品的数量")
+	public ResultVO selectItemsUnderReview(String goodsId,String goodsName){
+		return deliveryService.selectItemsUnderReview(goodsId,goodsName);
+	}
+
+	@PostMapping("/adminRefuse")
+	@ApiOperation("管理员拒绝出库申请")
+	public ResultVO adminRefuse(String outId){
+		return deliveryService.adminRefuse(outId);
+	}
 }

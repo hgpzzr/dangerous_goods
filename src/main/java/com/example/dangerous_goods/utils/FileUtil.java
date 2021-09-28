@@ -77,7 +77,7 @@ public class FileUtil {
             while (i != -1) {
                 os.write(buffer);
                 i = bis.read(buffer);
-            }
+            }  
         } catch (Exception e) {
             e.printStackTrace();
         }

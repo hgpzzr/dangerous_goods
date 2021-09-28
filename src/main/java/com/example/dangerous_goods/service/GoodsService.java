@@ -127,4 +127,45 @@ public interface GoodsService {
 	 * @param goodsId
 	 */
 	void download(HttpServletResponse response,String goodsId);
+
+	/**
+	 * 管理员拒绝入库审核
+	 * @param goodsId
+	 * @return
+	 */
+	ResultVO adminRefuse(String goodsId);
+
+	/**
+	 * 查询所有库存
+	 * @return
+	 */
+	ResultVO selectAllGoods();
+
+	/**
+	 * 更新存取控制
+	 * @param form
+	 * @return
+	 */
+	ResultVO updateAccessControl(UpdateAccessControlForm form);
+
+	/**
+	 * 检查该老师是否能进行存取
+	 * @param chargeName
+	 * @return
+	 */
+	ResultVO checkAccessControl(String chargeName);
+
+	/**
+	 * 更新物品信息
+	 * @param form
+	 * @return
+	 */
+	ResultVO updateGoods(UpdateGodsForm form);
+
+	/**
+	 * 更新负责人信息
+	 * @param form
+	 * @return
+	 */
+	ResultVO updateCharge(UpdateChargeForm form);
 }

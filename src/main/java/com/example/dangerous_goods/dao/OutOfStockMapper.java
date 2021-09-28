@@ -18,5 +18,7 @@ public interface OutOfStockMapper {
 
     List<OutOfStock> selectByTeacherNameAndVerifyStatus(Integer status,String chargeName);
 
+    List<OutOfStock> selectByGoodsId(String goodsId);
+
     int updateByPrimaryKey(OutOfStock record);
 }

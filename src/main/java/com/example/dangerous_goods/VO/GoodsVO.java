@@ -33,5 +33,9 @@ public class GoodsVO {
 
 	private String shelfNumber;
 
+	private String roomNumber;
+
+	private Integer accessControl;
+
 	List<GoodsInfo> goodsInfoList;
 }

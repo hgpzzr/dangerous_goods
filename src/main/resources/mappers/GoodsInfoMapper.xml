@@ -7,6 +7,7 @@
     <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
     <result column="goods_weight" property="goodsWeight" jdbcType="DOUBLE" />
     <result column="goods_num" property="goodsNum" jdbcType="INTEGER" />
+    <result column="take_out_status" property="takeOutStatus" jdbcType="INTEGER" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
     delete from goods_info
@@ -36,26 +37,29 @@
     set goods_id = #{goodsId,jdbcType=VARCHAR},
       goods_name = #{goodsName,jdbcType=VARCHAR},
       goods_weight = #{goodsWeight,jdbcType=DOUBLE},
-      goods_num = #{goodsNum,jdbcType=INTEGER}
+      goods_num = #{goodsNum,jdbcType=INTEGER},
+      take_out_status = #{takeOutStatus,jdbcType=INTEGER}
     where goods_info_id = #{goodsInfoId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    select *
     from goods_info
     where goods_info_id = #{goodsInfoId,jdbcType=VARCHAR}
+    and take_out_status = 0
   </select>
   <select id="selectByGoodsIdAndGoodsName" resultMap="BaseResultMap">
-    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    select *
     from goods_info
-    where goods_id = #{goodsId,jdbcType=VARCHAR} and goods_name = #{goodsName,jdbcType=VARCHAR}
+    where goods_id = #{goodsId,jdbcType=VARCHAR} and goods_name = #{goodsName,jdbcType=VARCHAR} and take_out_status = 0
   </select>
   <select id="selectByGoodsId" resultMap="BaseResultMap" parameterType="java.lang.String"  >
-    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    select *
     from goods_info
-    where goods_id = #{goodsId,jdbcType=VARCHAR}
+    where goods_id = #{goodsId,jdbcType=VARCHAR} and take_out_status = 0
   </select>
   <select id="selectAll" resultMap="BaseResultMap" >
-    select goods_info_id, goods_id, goods_name, goods_weight, goods_num
+    select *
     from goods_info
+    where take_out_status = 0
   </select>
 </mapper>

@@ -1,10 +1,7 @@
 package com.example.dangerous_goods.controller;
 
 import com.example.dangerous_goods.VO.ResultVO;
-import com.example.dangerous_goods.form.AdminVerifyForm;
-import com.example.dangerous_goods.form.DeleteForm;
-import com.example.dangerous_goods.form.InsertGoodsForm;
-import com.example.dangerous_goods.form.TeacherVerifyForm;
+import com.example.dangerous_goods.form.*;
 import com.example.dangerous_goods.service.GoodsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -87,5 +84,41 @@ public class GoodsController {
 	@ApiOperation("下载word")
 	public void downloadWord(HttpServletResponse response, String goodsId){
 		goodsService.download(response,goodsId);
+	}
+
+	@GetMapping("/adminRefuse")
+	@ApiOperation("管理员拒绝入库申请")
+	public ResultVO adminRefuse(String goodsId){
+		return goodsService.adminRefuse(goodsId);
+	}
+
+	@GetMapping("selectAllGoods")
+	@ApiOperation("查询所有库存信息")
+	public ResultVO selectAllGoods(){
+		return goodsService.selectAllGoods();
+	}
+
+	@PostMapping("/updateAccessControl")
+	@ApiOperation("更新存取状态")
+	public ResultVO updateAccessControl(@Valid UpdateAccessControlForm form){
+		return goodsService.updateAccessControl(form);
+	}
+
+	@GetMapping("/checkAccessControl")
+	@ApiOperation("判断是否能进行存取")
+	public ResultVO checkAccessControl(String chargeName){
+		return goodsService.checkAccessControl(chargeName);
+	}
+
+	@PostMapping("/updateGoods")
+	@ApiOperation("修改物品的房价号与货架号")
+	public ResultVO updateGoods(@Valid UpdateGodsForm updateGodsForm){
+		return goodsService.updateGoods(updateGodsForm);
+	}
+
+	@PostMapping("/updateCharge")
+	@ApiOperation("修改负责人")
+	public ResultVO updateCharge(@Valid UpdateChargeForm form){
+		return goodsService.updateCharge(form);
 	}
 }

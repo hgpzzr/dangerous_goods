@@ -13,6 +13,8 @@ public class GoodsInfo implements Serializable {
 
     private Integer goodsNum;
 
+    private Integer takeOutStatus;
+
     private static final long serialVersionUID = 1L;
 
     public String getGoodsInfoId() {
@@ -55,6 +57,14 @@ public class GoodsInfo implements Serializable {
         this.goodsNum = goodsNum;
     }
 
+    public Integer getTakeOutStatus() {
+        return takeOutStatus;
+    }
+
+    public void setTakeOutStatus(Integer takeOutStatus) {
+        this.takeOutStatus = takeOutStatus;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -66,6 +76,7 @@ public class GoodsInfo implements Serializable {
         sb.append(", goodsName=").append(goodsName);
         sb.append(", goodsWeight=").append(goodsWeight);
         sb.append(", goodsNum=").append(goodsNum);
+        sb.append(", takeOutStatus=").append(takeOutStatus);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
