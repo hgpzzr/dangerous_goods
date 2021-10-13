@@ -93,4 +93,11 @@ public class UserController {
 	public ResultVO addTeacher(@RequestParam("file") MultipartFile file){
 		return userService.addTeacher(file);
 	}
+
+	@PostMapping("/addGoods")
+	@ApiOperation("管理员添加库存")
+	public ResultVO addGoods(adminAddGoodsForm form){
+		return goodsService.adminAddGoods(form);
+	}
+
 }

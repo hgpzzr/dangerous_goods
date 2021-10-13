@@ -168,4 +168,6 @@ public interface GoodsService {
 	 * @return
 	 */
 	ResultVO updateCharge(UpdateChargeForm form);
+
+	ResultVO adminAddGoods(adminAddGoodsForm form);
 }

@@ -540,4 +540,43 @@ public class GoodsServiceImpl implements GoodsService {
 		}
 		return ResultVOUtil.success("更新成功");
 	}
+
+	@Override
+	public ResultVO adminAddGoods(adminAddGoodsForm form) {
+		// 检查数量问题
+		for (GoodsInfoForm goodsInfoForm : form.getGoodsInfoFormList()) {
+			if (goodsInfoForm.getGoodsWeight() < 0 || goodsInfoForm.getGoodsNum() < 1) {
+				return ResultVOUtil.error(ResultEnum.DIGITAL_SPECIFICATION_ERROR);
+			}
+		}
+		Goods goods = new Goods();
+		String goodsId = GenerateIdUtil.getGoodsId(goodsMapper);
+		BeanUtils.copyProperties(form,goods);
+		goods.setOverdueStatus(0);
+		goods.setVerifyStatus(2);
+		goods.setTakeOutStatus(0);
+		goods.setAccessControl(0);
+		goods.setGoodsId(goodsId);
+		int insert = goodsMapper.insert(goods);
+		if(insert != 1){
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		// 物品详情
+		GoodsInfo goodsInfo = new GoodsInfo();
+		goodsInfo.setGoodsId(goodsId);
+		for (GoodsInfoForm goodsInfoForm : form.getGoodsInfoFormList()) {
+			if (goodsInfoForm.getGoodsName() == null || goodsInfoForm.getGoodsNum() == null || goodsInfoForm.getGoodsWeight() == null) {
+				continue;
+			}
+			BeanUtils.copyProperties(goodsInfoForm, goodsInfo);
+			// 生成随机的编号
+			String goodsInfoId = generateIdUtil.getRandomId(goodsInfoMapper);
+			goodsInfo.setGoodsInfoId(goodsInfoId);
+			int insert1 = goodsInfoMapper.insert(goodsInfo);
+			if (insert1 != 1) {
+				return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+			}
+		}
+		return ResultVOUtil.success("添加成功");
+	}
 }

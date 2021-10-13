@@ -47,7 +47,14 @@ public interface UserService {
 	ResultVO register(RegisterForm registerForm);
 
 
+	/**
+	 * 添加老师
+	 * @param file
+	 * @return
+	 */
 	ResultVO addTeacher(MultipartFile file);
+
+
 
 
 }
