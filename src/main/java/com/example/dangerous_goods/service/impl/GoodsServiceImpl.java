@@ -527,6 +527,11 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Override
 	public ResultVO updateCharge(UpdateChargeForm form) {
+		// 对老师进行验证
+		List<Teacher> teacherList = teacherMapper.selectByName(form.getChargeName());
+		if(teacherList.size() == 0){
+			return ResultVOUtil.error(ResultEnum.TEACHER_NOT_EXIST_ERROR);
+		}
 		Goods goods = goodsMapper.selectByPrimaryKey(form.getGoodsId());
 		BeanUtils.copyProperties(form,goods);
 		int update = goodsMapper.updateByPrimaryKey(goods);

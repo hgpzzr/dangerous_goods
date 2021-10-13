@@ -51,4 +51,7 @@ public class ExcelForm {
 
 	@ExcelProperty("数量(桶/瓶）")
 	private int goodsNum;
+
+	@ExcelProperty("房间号")
+	private String roomNumber;
 }

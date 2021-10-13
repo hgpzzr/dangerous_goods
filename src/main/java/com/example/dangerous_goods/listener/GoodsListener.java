@@ -9,11 +9,13 @@ import com.example.dangerous_goods.entity.Goods;
 import com.example.dangerous_goods.entity.GoodsInfo;
 import com.example.dangerous_goods.form.ExcelForm;
 import com.example.dangerous_goods.utils.GenerateIdUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,6 +29,7 @@ import java.util.List;
  * @date 2021/6/2 11:36
  */
 
+@Slf4j
 public class GoodsListener extends AnalysisEventListener<ExcelForm> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GoodsListener.class);
@@ -106,6 +109,8 @@ public class GoodsListener extends AnalysisEventListener<ExcelForm> {
 			Goods goods = new Goods();
 			GoodsInfo goodsInfo = new GoodsInfo();
 			BeanUtils.copyProperties(excelForm,goods);
+//			log.info("goodsInfo:{}",goods);
+//			log.info("excelForm:{}",excelForm);
 			BeanUtils.copyProperties(excelForm,goodsInfo);
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = null;
@@ -115,9 +120,11 @@ public class GoodsListener extends AnalysisEventListener<ExcelForm> {
 				e.printStackTrace();
 			}
 			goods.setApplicationTime(date);
+			goods.setAccessControl(0);
 			goodsList.add(goods);
 			goodsInfoList.add(goodsInfo);
 		}
+		log.info("goodsList:{}",goodsList);
 		goodsMapper.batchInsert(goodsList);
 		goodsInfoMapper.batchInsert(goodsInfoList);
 		LOGGER.info("存储数据库成功！");

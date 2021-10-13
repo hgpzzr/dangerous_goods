@@ -34,6 +34,9 @@ public class ExcelVO {
 	@ExcelProperty("货架号")
 	private String shelfNumber;
 
+	@ExcelProperty("房间号")
+	private String roomNumber;
+
 	@ExcelProperty("物品名称")
 	private String goodsName;
 

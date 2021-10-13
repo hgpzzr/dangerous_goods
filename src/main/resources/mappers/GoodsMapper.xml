@@ -34,13 +34,13 @@
     insert into goods (goods_id, college, application_time,
       charge_phone, charge_name, agent_phone,
       agent_name, overdue_status, verify_status,
-      shelf_number, take_out_status,roomNumber)
+      shelf_number, take_out_status,room_number)
     values
     <foreach collection="list" item="item" separator=",">
     (#{item.goodsId}, #{item.college}, #{item.applicationTime},
       #{item.chargePhone}, #{item.chargeName}, #{item.agentPhone},
       #{item.agentName}, #{item.overdueStatus}, #{item.verifyStatus},
-      #{item.shelfNumber}, #{item.takeOutStatus},#{roomNumber})
+      #{item.shelfNumber}, #{item.takeOutStatus},#{item.roomNumber})
     </foreach>
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.example.dangerous_goods.entity.Goods" >
