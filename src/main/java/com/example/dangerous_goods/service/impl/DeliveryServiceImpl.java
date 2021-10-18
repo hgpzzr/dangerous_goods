@@ -233,9 +233,10 @@ public class DeliveryServiceImpl implements DeliveryService {
 		String templatePath = outTemplatePath;
 		// 输出位置
 		String outPath = filePath + outOfStock.getOutId() + ".docx";
-
+		log.info("->>>>>>>>>>>>>>>>>>outPath:{}",outPath);
 		Map<String, Object> paramMap = new HashMap<>(16);
 		// 普通的占位符示例 参数数据结构 {str,str}
+		log.info("goods:{}",goods);
 		paramMap.put("college", goods.getCollege());
 		paramMap.put("applicationTime", sd.format(outOfStock.getOutTime()));
 		paramMap.put("chargePhone", goods.getChargePhone());

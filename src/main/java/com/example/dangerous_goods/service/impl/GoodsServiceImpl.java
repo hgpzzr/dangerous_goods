@@ -480,9 +480,11 @@ public class GoodsServiceImpl implements GoodsService {
 	public ResultVO selectAllGoods() {
 		List<Goods> goodsList = goodsMapper.selectByVerifyStatus(2);
 		List<GoodsVO> goodsVOList = new ArrayList<>();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		for (Goods goods : goodsList) {
 			GoodsVO goodsVO = new GoodsVO();
 			BeanUtils.copyProperties(goods, goodsVO);
+			goodsVO.setApplicationTime(simpleDateFormat.format(goods.getApplicationTime()));
 			List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goods.getGoodsId());
 			goodsVO.setGoodsInfoList(goodsInfoList);
 			goodsVOList.add(goodsVO);
@@ -507,7 +509,7 @@ public class GoodsServiceImpl implements GoodsService {
 	public ResultVO checkAccessControl(String chargeName) {
 		List<Goods> goodsList = goodsMapper.selectByChargeName(chargeName);
 		for (Goods goods : goodsList) {
-			if(goods.getAccessControl() == 1){
+			if (goods.getAccessControl() == 1) {
 				return ResultVOUtil.success(false);
 			}
 		}
@@ -517,9 +519,9 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public ResultVO updateGoods(UpdateGodsForm form) {
 		Goods goods = goodsMapper.selectByPrimaryKey(form.getGoodsId());
-		BeanUtils.copyProperties(form,goods);
+		BeanUtils.copyProperties(form, goods);
 		int update = goodsMapper.updateByPrimaryKey(goods);
-		if(update != 1){
+		if (update != 1) {
 			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 		}
 		return ResultVOUtil.success("更新成功");
@@ -529,18 +531,19 @@ public class GoodsServiceImpl implements GoodsService {
 	public ResultVO updateCharge(UpdateChargeForm form) {
 		// 对老师进行验证
 		List<Teacher> teacherList = teacherMapper.selectByName(form.getChargeName());
-		if(teacherList.size() == 0){
+		if (teacherList.size() == 0) {
 			return ResultVOUtil.error(ResultEnum.TEACHER_NOT_EXIST_ERROR);
 		}
 		Goods goods = goodsMapper.selectByPrimaryKey(form.getGoodsId());
-		BeanUtils.copyProperties(form,goods);
+		BeanUtils.copyProperties(form, goods);
 		int update = goodsMapper.updateByPrimaryKey(goods);
-		if(update != 1){
+		if (update != 1) {
 			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 		}
 		return ResultVOUtil.success("更新成功");
 	}
 
+	@Transactional
 	@Override
 	public ResultVO adminAddGoods(adminAddGoodsForm form) {
 		// 检查数量问题
@@ -551,14 +554,14 @@ public class GoodsServiceImpl implements GoodsService {
 		}
 		Goods goods = new Goods();
 		String goodsId = GenerateIdUtil.getGoodsId(goodsMapper);
-		BeanUtils.copyProperties(form,goods);
+		BeanUtils.copyProperties(form, goods);
 		goods.setOverdueStatus(0);
 		goods.setVerifyStatus(2);
 		goods.setTakeOutStatus(0);
 		goods.setAccessControl(0);
 		goods.setGoodsId(goodsId);
 		int insert = goodsMapper.insert(goods);
-		if(insert != 1){
+		if (insert != 1) {
 			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 		}
 		// 物品详情
@@ -578,5 +581,26 @@ public class GoodsServiceImpl implements GoodsService {
 			}
 		}
 		return ResultVOUtil.success("添加成功");
+	}
+
+	@Transactional
+	@Override
+	public ResultVO adminDeleteGoods(String goodsInfoId) {
+		if(goodsInfoId== null){
+			return ResultVOUtil.error(ResultEnum.PARAM_NULL_ERROR);
+		}
+		GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsInfoId);
+		int delete = goodsInfoMapper.deleteByPrimaryKey(goodsInfoId);
+		if (delete != 1) {
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goodsInfo.getGoodsId());
+		if(goodsInfoList.size() == 0){
+			int delete1 = goodsMapper.deleteByPrimaryKey(goodsInfo.getGoodsId());
+			if(delete1 != 1){
+				return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+			}
+		}
+		return ResultVOUtil.success("删除成功");
 	}
 }

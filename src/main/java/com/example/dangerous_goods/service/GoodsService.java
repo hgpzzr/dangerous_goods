@@ -169,5 +169,17 @@ public interface GoodsService {
 	 */
 	ResultVO updateCharge(UpdateChargeForm form);
 
+	/**
+	 * 管理员添加物品
+	 * @param form
+	 * @return
+	 */
 	ResultVO adminAddGoods(adminAddGoodsForm form);
+
+	/**
+	 * 管理员删除库存
+	 * @param goodsInfoId
+	 * @return
+	 */
+	ResultVO adminDeleteGoods(String goodsInfoId);
 }

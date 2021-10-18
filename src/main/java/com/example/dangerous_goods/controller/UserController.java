@@ -84,7 +84,7 @@ public class UserController {
 
 	@PostMapping("/extension")
 	@ApiOperation("延期")
-	public ResultVO extension(ExtensionForm extensionForm){
+	public ResultVO extension(@Valid ExtensionForm extensionForm){
 		return goodsService.extension(extensionForm);
 	}
 
@@ -96,8 +96,13 @@ public class UserController {
 
 	@PostMapping("/addGoods")
 	@ApiOperation("管理员添加库存")
-	public ResultVO addGoods(adminAddGoodsForm form){
+	public ResultVO addGoods(@Valid @RequestBody adminAddGoodsForm form){
 		return goodsService.adminAddGoods(form);
 	}
 
+	@GetMapping("/deleteGoods")
+	@ApiOperation("管理员删除物品")
+	public ResultVO deleteGoods(String goodsInfoId){
+		return goodsService.adminDeleteGoods(goodsInfoId);
+	}
 }

@@ -18,7 +18,7 @@ import java.util.List;
 public class adminAddGoodsForm {
 	@ApiModelProperty("学院")
 	@NotNull(message = "学院不能为空")
-	private int college;
+	private String college;
 
 	@ApiModelProperty("申请时间")
 	@NotNull(message = "申请时间不能为空")
