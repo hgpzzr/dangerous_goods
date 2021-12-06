@@ -586,7 +586,7 @@ public class GoodsServiceImpl implements GoodsService {
 	@Transactional
 	@Override
 	public ResultVO adminDeleteGoods(String goodsInfoId) {
-		if(goodsInfoId== null){
+		if (goodsInfoId == null) {
 			return ResultVOUtil.error(ResultEnum.PARAM_NULL_ERROR);
 		}
 		GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsInfoId);
@@ -595,12 +595,47 @@ public class GoodsServiceImpl implements GoodsService {
 			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 		}
 		List<GoodsInfo> goodsInfoList = goodsInfoMapper.selectByGoodsId(goodsInfo.getGoodsId());
-		if(goodsInfoList.size() == 0){
+		if (goodsInfoList.size() == 0) {
 			int delete1 = goodsMapper.deleteByPrimaryKey(goodsInfo.getGoodsId());
-			if(delete1 != 1){
+			if (delete1 != 1) {
 				return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
 			}
 		}
 		return ResultVOUtil.success("删除成功");
+	}
+
+	@Transactional
+	@Override
+	public ResultVO changeGoodsNum(String goodsInfoId, Integer goodsNum) {
+		if (goodsInfoId == null) {
+			return ResultVOUtil.error(ResultEnum.PARAM_NULL_ERROR);
+		}
+		GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsInfoId);
+		// 如果更新值为0
+		if (goodsNum == 0) {
+			goodsInfo.setTakeOutStatus(1);
+			int flag = 0;
+			// 判断是否货物全为0，如果全为0则需要将goods里的takeOutStatus置为0
+			for (GoodsInfo goodsInfo1 : goodsInfoMapper.selectByGoodsId(goodsInfo.getGoodsId())) {
+				if(goodsInfo1.getGoodsNum() != 0){
+					flag = 1;
+					break;
+				}
+			}
+			if(flag == 0){
+				Goods goods = goodsMapper.selectByPrimaryKey(goodsInfo.getGoodsId());
+				goods.setTakeOutStatus(1);
+				int update = goodsMapper.updateByPrimaryKey(goods);
+				if(update != 1){
+					return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+				}
+			}
+		}
+		goodsInfo.setGoodsNum(goodsNum);
+		int update = goodsInfoMapper.updateByPrimaryKey(goodsInfo);
+		if(update != 1){
+			return ResultVOUtil.error(ResultEnum.DATABASE_OPTION_ERROR);
+		}
+		return ResultVOUtil.success("修改成功");
 	}
 }

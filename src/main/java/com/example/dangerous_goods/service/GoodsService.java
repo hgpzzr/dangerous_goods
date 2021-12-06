@@ -182,4 +182,6 @@ public interface GoodsService {
 	 * @return
 	 */
 	ResultVO adminDeleteGoods(String goodsInfoId);
+
+	ResultVO changeGoodsNum(String goodsInfoId, Integer goodsNum);
 }
